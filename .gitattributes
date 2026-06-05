@@ -1,0 +1,12 @@
+* text=auto eol=lf
+
+# Exclude development-only files from source archives (git archive,
+# GitHub auto-generated zipballs). The CMS PluginValidator only allows
+# .php files under src/, database/migrations/, and the named routes/*.php
+# files, so shipping tests/ in the archive trips that whitelist.
+/tests/                  export-ignore
+/.gitattributes          export-ignore
+/.gitignore              export-ignore
+/.github/                export-ignore
+/phpunit.xml             export-ignore
+/phpunit.xml.dist        export-ignore

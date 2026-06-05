@@ -1,0 +1,19 @@
+{
+    "name": "TallCMS Privyr",
+    "slug": "privyr",
+    "vendor": "tallcms",
+    "version": "1.0.0",
+    "description": "Forward Contact Form submissions to each site's Privyr CRM via webhook",
+    "author": "TallCMS",
+    "author_url": "https://tallcms.com",
+    "homepage": "https://tallcms.com/privyr",
+    "namespace": "Tallcms\\Privyr",
+    "provider": "Tallcms\\Privyr\\Providers\\PrivyrServiceProvider",
+    "filament_plugin": "Tallcms\\Privyr\\Filament\\PrivyrPlugin",
+    "tags": ["privyr", "crm", "integrations", "webhook", "contact-form"],
+    "license_required": false,
+    "compatibility": {
+        "php": "^8.2",
+        "tallcms": ">=4.4.3"
+    }
+}
