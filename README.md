@@ -24,7 +24,9 @@ webhook as a new lead — asynchronously, with retries, and without ever blockin
 
 ## Requirements
 
-- TallCMS with the multisite plugin (provides per-site settings + site context).
+- TallCMS 4.4.3+ (core). Works on both **standalone** (single-site) and **multisite** installs —
+  the multisite plugin is optional. On standalone, the one core site is configured directly;
+  with multisite installed, each owned site is configurable from the Site selector.
 - A running queue worker (`php artisan queue:work`) — the plugin dispatches a queued job.
 
 ## Installation

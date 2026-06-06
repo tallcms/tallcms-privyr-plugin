@@ -10,8 +10,8 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Illuminate\Database\Eloquent\Model;
 use TallCms\Cms\Services\SiteSettingsService;
-use Tallcms\Multisite\Models\Site;
 use Tallcms\Privyr\Support\PrivyrWebhookUrl;
 
 /**
@@ -23,6 +23,11 @@ use Tallcms\Privyr\Support\PrivyrWebhookUrl;
  * dashboard's site picker widget being present. The default selection follows
  * the dashboard scope when set, otherwise the user's first owned site (the same
  * role-based fallback ThemeManager uses for site_owners).
+ *
+ * Works on both multisite and standalone installs: the Site model is resolved
+ * at runtime (multisite's model when present, else core CMS's), since both
+ * expose the same `name`/`domain`/`user_id`/`is_active` columns on the shared
+ * `tallcms_sites` table. A standalone install simply has one site row.
  */
 class PrivyrSettings extends Page implements HasForms
 {
@@ -141,7 +146,7 @@ class PrivyrSettings extends Page implements HasForms
      */
     protected function siteOptions(): array
     {
-        $query = Site::query()->where('is_active', true)->orderBy('name');
+        $query = $this->siteModel()::query()->where('is_active', true)->orderBy('name');
 
         if (! $this->isSuperAdmin()) {
             $query->where('user_id', auth()->id());
@@ -149,10 +154,24 @@ class PrivyrSettings extends Page implements HasForms
 
         // Label by name + domain — names can collide across sites, domains can't.
         return $query->get(['id', 'name', 'domain'])
-            ->mapWithKeys(fn (Site $site): array => [
+            ->mapWithKeys(fn (Model $site): array => [
                 $site->id => trim(($site->name ?? 'Untitled').' ('.$site->domain.')'),
             ])
             ->all();
+    }
+
+    /**
+     * The Site model class to query. Prefer the multisite plugin's model (it may
+     * carry global scopes / per-tenant behaviour) when installed; otherwise fall
+     * back to the core CMS model so the page works on standalone installs.
+     *
+     * @return class-string<Model>
+     */
+    protected function siteModel(): string
+    {
+        return class_exists(\Tallcms\Multisite\Models\Site::class)
+            ? \Tallcms\Multisite\Models\Site::class
+            : \TallCms\Cms\Models\Site::class;
     }
 
     /**
